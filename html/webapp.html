@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f1f1f1;
+        }
+        #startScreen {
+            text-align: center;
+        }
+        #startScreen h1 {
+            font-size: 50px;
+            color: black;
+        }
+        #startScreen button {
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        #score-board {
+            font-size: 30px;
+            color: black;
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            text-align: center;
+        }
+        #playAgainButton {
+            display: none;
+            margin-top: 20px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 10px 20px;
+            font-size: 18px;
+        }
+        /* New button in top-left corner */
+        #homeButton {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 20; /* Ensure it's on top of the game canvas */
+        }
+        #homeButton:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <!-- Button linking to homepage -->
+    <a href="index.html">
+        <button id="homeButton">Home</button>
+    </a>
+
+    <div id="startScreen">
+        <h1>Triangle Man</h1>
+        <button id="startButton" onclick="startGame()">Start Game</button>
+    </div>
+
+    <div id="score-board" style="display:none;">Score: 0</div>
+    <button id="playAgainButton" onclick="playAgain()" style="display:none;">Play Again</button>
+
+    <script>
+        var myGamePiece;
+        var myDots = [];
+        var myGhosts = [];
+        var myCoins = [];
+        var myScore;
+        var gameOver = false;
+
+        var canvasWidth, canvasHeight;
+        var pacmanSize, ghostSize, coinSize;
+        var pacmanSpeedX = 5, pacmanSpeedY = 5; // Set fixed speed for Triangle Man
+
+        // Adjust the canvas size to fit the screen and initialize the game
+        function startGame() {
+            // Hide the start screen
+            document.getElementById("startScreen").style.display = "none";
+            // Show the score board and start the game
+            document.getElementById('score-board').style.display = "block";
+            document.getElementById('playAgainButton').style.display = "none"; // Hide Play Again button
+
+            resizeCanvas();
+            // Initialize the game state
+            myGamePiece = new component(pacmanSize, pacmanSize, "orange", 10, canvasHeight / 2, "triangleMan");
+            myScore = 0;  // Initialize score as a number (no longer a component)
+            gameOver = false; // Reset gameOver flag
+
+            myGameArea.start();
+            createCoins();  // Create coins initially
+            createGhosts(); // Create ghosts initially
+        }
+
+        var myGameArea = {
+            canvas: document.createElement("canvas"),
+            start: function() {
+                this.canvas.width = canvasWidth;
+                this.canvas.height = canvasHeight;
+                this.context = this.canvas.getContext("2d");
+                document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+                this.frameNo = 0;
+                this.interval = setInterval(updateGameArea, 20);
+            },
+            clear: function() {
+                this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            }
+        };
+
+        // Function to resize the canvas based on window size
+        function resizeCanvas() {
+            canvasWidth = window.innerWidth;
+            canvasHeight = window.innerHeight;
+            pacmanSize = canvasWidth * 0.05;  // Triangle Man size as a percentage of the screen width
+            ghostSize = pacmanSize * 1.2;  // Ghosts will be slightly larger than Triangle Man
+            coinSize = pacmanSize * 0.4;  // Coins will be smaller than Triangle Man
+        }
+
+        function component(width, height, color, x, y, type) {
+            this.type = type;
+            this.width = width;
+            this.height = height;
+            this.speedX = 0;
+            this.speedY = 0;
+            this.x = x;
+            this.y = y;
+            this.gravity = 0;
+            this.gravitySpeed = 0;
+            this.update = function() {
+                ctx = myGameArea.context;
+                if (this.type == "triangleMan") {
+                    ctx.fillStyle = color;
+                    ctx.beginPath();
+                    // Drawing a triangle to represent Triangle Man
+                    ctx.moveTo(this.x, this.y - this.height / 2); // Top point of triangle
+                    ctx.lineTo(this.x - this.width / 2, this.y + this.height / 2); // Bottom left
+                    ctx.lineTo(this.x + this.width / 2, this.y + this.height / 2); // Bottom right
+                    ctx.closePath();
+                    ctx.fill();
+                } else if (this.type == "ghost") {
+                    ctx.fillStyle = color;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.width / 2, 0, Math.PI * 2); // Ghost shape
+                    ctx.fill();
+                } else if (this.type == "coin") {
+                    ctx.fillStyle = "gold";
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.width / 2, 0, Math.PI * 2); // Coin shape
+                    ctx.fill();
+                }
+            };
+            this.newPos = function() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.hitBounds();
+            };
+            this.hitBounds = function() {
+                // Prevent Triangle Man from going off the screen
+                if (this.x - this.width / 2 < 0) this.x = this.width / 2;
+                if (this.x + this.width / 2 > canvasWidth) this.x = canvasWidth - this.width / 2;
+                if (this.y - this.height / 2 < 0) this.y = this.height / 2;
+                if (this.y + this.height / 2 > canvasHeight) this.y = canvasHeight - this.height / 2;
+            };
+            this.crashWith = function(otherobj) {
+                var myleft = this.x - this.width / 2;
+                var myright = this.x + this.width / 2;
+                var mytop = this.y - this.height / 2;
+                var mybottom = this.y + this.height / 2;
+                var otherleft = otherobj.x - otherobj.width / 2;
+                var otherright = otherobj.x + otherobj.width / 2;
+                var othertop = otherobj.y - otherobj.height / 2;
+                var otherbottom = otherobj.y + otherobj.height / 2;
+                // Only crash when the objects are actually touching (closer distance for collision)
+                if (mybottom > othertop && mytop < otherbottom && myright > otherleft && myleft < otherright) {
+                    return true;
+                }
+                return false;
+            };
+        }
+
+        function createCoins() {
+            // Start with fewer coins on the screen
+            myCoins = [];
+            for (let i = 0; i < 5; i++) {
+                var x = Math.random() * (canvasWidth - 50) + 25;
+                var y = Math.random() * (canvasHeight - 50) + 25;
+                myCoins.push(new component(coinSize, coinSize, "gold", x, y, "coin"));
+            }
+        }
+
+        function createGhosts() {
+            // Clear existing ghosts to avoid accumulation
+            myGhosts = [];
+            
+            // Create a fixed number of ghosts at random positions with different colors
+            var ghostColors = ["red", "blue", "green", "pink"];
+            for (let i = 0; i < 4; i++) {
+                var ghost = new component(ghostSize, ghostSize, ghostColors[i], Math.random() * canvasWidth, Math.random() * canvasHeight, "ghost");
+                // Start with a random direction and speed
+                ghost.setRandomDirection(); // Set random speed and direction for each ghost
+                myGhosts.push(ghost);
+            }
+        }
+
+        // New function to set random direction for each ghost
+        component.prototype.setRandomDirection = function() {
+            var directions = [-1, 1]; // -1 for reverse, 1 for forward
+            this.speedX = directions[Math.floor(Math.random() * 2)] * Math.random() * 3;
+            this.speedY = directions[Math.floor(Math.random() * 2)] * Math.random() * 3;
+        };
+
+        // Main game update function
+        function updateGameArea() {
+            if (gameOver) {
+                document.getElementById('score-board').innerHTML = "Game Over! Final Score: " + myScore;
+                document.getElementById('playAgainButton').style.display = "block"; // Show the play again button
+                return;
+            }
+
+            myGameArea.clear();
+            myGameArea.frameNo++;
+            myGamePiece.newPos();
+            myGamePiece.update();
+
+            // Update ghosts and make them move randomly every 2 seconds
+            for (let i = 0; i < myGhosts.length; i++) {
+                myGhosts[i].newPos();
+                myGhosts[i].update();
+                if (myGamePiece.crashWith(myGhosts[i])) {
+                    gameOver = true; // Game over if Triangle Man hits a ghost
+                }
+            }
+
+            // Update coins and check for collision with Triangle Man
+            for (let i = 0; i < myCoins.length; i++) {
+                myCoins[i].update();
+                if (myGamePiece.crashWith(myCoins[i])) {
+                    myCoins.splice(i, 1);  // Remove the coin
+                    myScore++;  // Increase score
+                    break;
+                }
+            }
+
+            // Create new coins if all are eaten
+            if (myCoins.length === 0) {
+                createCoins();
+            }
+
+            // Update the score display
+            document.getElementById('score-board').innerHTML = "Score: " + myScore;
+        }
+
+        // Listen for the spacebar key press to start the game or play again
+        document.addEventListener('keydown', function(event) {
+            if (event.key === " ") {  // Spacebar key
+                if (gameOver) {
+                    playAgain(); // Restart the game if it's over
+                } else {
+                    startGame();
+                }
+            }
+        });
+
+        // Listen for arrow keys to control Triangle Man
+        document.addEventListener('keydown', function(event) {
+            if (event.key === "ArrowUp") {
+                myGamePiece.speedY = -pacmanSpeedY;
+            }
+            if (event.key === "ArrowDown") {
+                myGamePiece.speedY = pacmanSpeedY;
+            }
+            if (event.key === "ArrowLeft") {
+                myGamePiece.speedX = -pacmanSpeedX;
+            }
+            if (event.key === "ArrowRight") {
+                myGamePiece.speedX = pacmanSpeedX;
+            }
+        });
+
+        // Stop Triangle Man movement when key is released
+        document.addEventListener('keyup', function(event) {
+            if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+                myGamePiece.speedY = 0;
+            }
+            if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+                myGamePiece.speedX = 0;
+            }
+        });
+
+        // Function to restart the game
+        function playAgain() {
+            gameOver = false;
+            document.getElementById('score-board').innerHTML = "Score: 0";
+            document.getElementById('playAgainButton').style.display = "none";
+            startGame();
+        }
+
+        // Change ghost directions every 2 seconds
+        setInterval(function() {
+            for (let i = 0; i < myGhosts.length; i++) {
+                myGhosts[i].setRandomDirection();
+            }
+        }, 2000);  // 2000ms = 2 seconds
+    </script>
+</body>
+</html>

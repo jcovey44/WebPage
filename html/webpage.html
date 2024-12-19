@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snowboarding Information</title>
+    
+    <style>
+        body {
+            background-color: #333;
+            font-family: Arial, sans-serif;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            text-align: center;
+            font-size: 2em;
+            padding: 20px;
+            background-color: #444;
+        }
+
+        nav {
+            background-color: #555;
+            padding: 10px;
+            text-align: center;
+        }
+
+        nav ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav ul li {
+            display: inline;
+            margin-right: 15px;
+        }
+
+        nav a {
+            color: #fff;
+            text-decoration: none;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        .section {
+            padding: 20px;
+            margin: 20px 0;
+            background-color: #444; /* Section background color */
+        }
+
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: #222; /* Footer in darker gray */
+        }
+
+        .back-to-top-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #007bff; /* Button color */
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .back-to-top-btn:hover {
+            background-color: #0056b3; /* Darker blue when hovering */
+        }
+    </style>
+
+</head>
+<body>
+
+    <!-- Header Section -->
+    <header class="header">
+        <h1>Snowboarding, the king of winter sports</h1>
+    </header>
+
+    <!-- Navigation -->
+    <nav>
+        <ul>
+            <li><a href="#section1">Snowboarding general information</a></li>
+            <li><a href="#section2">Shaun White video and Interactive Graph</a></li>
+            <li><a href="index.html">Back to Homepage</a></li>
+        </ul>
+    </nav>
+
+    <!-- Content Section 1 -->
+    <div id="section1" class="section">
+        <h2>Snowboarding Popularity Rises in Utah</h2>
+        <p>Not only is snowboarding my favorite hobby, but it seems to be something more and more people enjoy as snowboarding population rises in the west each year</p>
+
+        <!-- Unordered list inside an ordered list -->
+        <ol>
+            <li>Snowboarder Population On the Rise
+                <ul>
+                    <li>In Utah, the number of snowboarders usually outweighs skiers dependent on the year</li>
+                    <li>Worldwide there are still more people who ski than snowboard, however the gap between the two numbers shrinks every year as snowboarding gains popularity</li>
+                </ul>
+            </li>
+            <li>Professional Snowboarders drive interest and popularity to the sport
+                <ul>
+                    <li>As more and more people get exposure to the sport through pro snowboarders and events such as the olympics, the percentage of snowboarders rises</li>
+                    <li>Snowboarders like Shaun White, who holds the record for the number of half-pipe gold medals, continue to improve and drive popularity for the sport</li>
+                </ul>
+            </li>
+        </ol>
+
+        <!-- Embedded Image -->
+        <img src="../images/snowboarder.jpeg" alt="My Hobby Image" class="image" style="width: 50%; height: auto;">
+    </div>
+
+    <!-- Content Section 2 -->
+    <div id="section2" class="section">
+        <h2>Shaun White Highlight reel</h2>
+        
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/UHhy2xcy02k" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+        <p>Pro's who master the sport like Shaun White continue to increase interest in snowboarding</p>
+    </div>
+
+    <!-- Content Section 3: Tableau Graph -->
+    <div id="section3" class="section">
+        <h2>Section 3: Ski Area Visits Per Year (Interactive Tableau Graph)</h2>
+        
+        <!-- Tableau Embed Code -->
+        <div class='tableauPlaceholder' id='viz1734568221461' style='position: relative'>
+            <noscript><a href='#'>
+                <img alt='Ski Area Visits Per Year' src='https://public.tableau.com/static/images/Sk/SkiAreaVisitsPerYearByRegion/SkiAreaVisitsPerYear/1_rss.png' style='border: none' />
+            </a></noscript>
+            <object class='tableauViz' style='display:none;'>
+                <param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' />
+                <param name='embed_code_version' value='3' />
+                <param name='site_root' value='' />
+                <param name='name' value='SkiAreaVisitsPerYearByRegion/SkiAreaVisitsPerYear' />
+                <param name='tabs' value='no' />
+                <param name='toolbar' value='yes' />
+                <param name='static_image' value='https://public.tableau.com/static/images/Sk/SkiAreaVisitsPerYearByRegion/SkiAreaVisitsPerYear/1.png' />
+                <param name='animate_transition' value='yes' />
+                <param name='display_static_image' value='yes' />
+                <param name='display_spinner' value='yes' />
+                <param name='display_overlay' value='yes' />
+                <param name='display_count' value='yes' />
+                <param name='language' value='en-US' />
+            </object>
+        </div>
+        <script type='text/javascript'>
+            var divElement = document.getElementById('viz1734568221461');
+            var vizElement = divElement.getElementsByTagName('object')[0];
+            vizElement.style.width='100%';
+            vizElement.style.height=(divElement.offsetWidth*0.75)+'px';
+            var scriptElement = document.createElement('script');
+            scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';
+            vizElement.parentNode.insertBefore(scriptElement, vizElement);
+        </script>
+
+        <p>Ski Resort Visits per Year by Region</p>
+    </div>
+
+    <!-- Footer Section -->
+    <footer>
+        <p>Created by Joshua Covey.</p>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <button id="backToTopBtn" class="back-to-top-btn" onclick="scrollToTop()">Back to Top</button>
+
+    <script>
+        var backToTopBtn = document.getElementById("backToTopBtn");
+
+        window.onscroll = function() {
+            if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
+                backToTopBtn.style.display = "block";
+            } else {
+                backToTopBtn.style.display = "none";
+            }
+        };
+
+        // When the user clicks the button, scroll to the top of the page
+        function scrollToTop() {
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;
+        }
+    </script>
+
+</body>
+</html>
